@@ -309,6 +309,7 @@ h2{font-size:clamp(22px,6.5vw,28px)}
         <ul>
           <li>Лабиринты на всех картах: каждый забег генерируется новая схема стен. Стены блокируют вас, врагов и выстрелы, а между секторами всегда остаются свободные коридоры</li>
           <li>Лабиринт стал честной ареной: карта ограничена квадратом, стен больше, в углу экрана мини-карта с вашим положением, боссами и элитой</li>
+          <li>Ctrl+Z стал редким: заряд даётся за 300 убийств (раньше за 60), подарок «+1 заряд» выпадает реже</li>
           <li>Монеты стали редкими: с обычных врагов выпадают почти никогда, награда в основном за боссов, элиту, принтеры и события</li>
           <li>Новая песня «ЧСВ» в плеере</li>
           <li>Плеер: кнопка ♪ слева над мини-картой. Песню можно слушать прямо во время игры, ставить на паузу и менять громкость</li>
@@ -1487,7 +1488,7 @@ function spawn(dt) {
 /* ---------- combat ---------- */
 const PCOL = [COL.magenta, COL.blue, COL.ink, COL.sun];
 function dropBonus(x, y) {
-  const opts = [['heal', 34], ['mag', 24], ['nuke', 14], ['undo', P.charges >= 3 ? 0 : 14], ['xp', 14], ['shield', 20]];
+  const opts = [['heal', 34], ['mag', 24], ['nuke', 14], ['undo', P.charges >= 3 ? 0 : 4], ['xp', 14], ['shield', 20]];
   let tot = 0;
   for (const o of opts) tot += o[1];
   let r = Math.random() * tot, k = 'heal';
@@ -1535,7 +1536,7 @@ function die(e) {
   killT.push(T); while (killT.length && T - killT[0] > 4) killT.shift();
   if (killT.length === 15 || killT.length === 30 || killT.length === 50 || killT.length === 80) say('РАЗНОС ×' + killT.length, COL.blue, 2);
   if (isBoss(e.tier)) say('ПРАВКИ ПРИНЯТЫ', COL.sun, 3); else if (isElite(e.tier)) say('ЭЛИТА ПОВЕРЖЕНА', COL.sun, 2);
-  if (P.prog >= 60) { P.prog = 0; P.charges = Math.min(3, P.charges + 1); }
+  if (P.prog >= UNDO_KILLS) { P.prog = 0; P.charges = Math.min(3, P.charges + 1); }
   if (isBoss(e.tier)) {
     P.bossK++;
     if (e.tier === BOSS2) for (let i = 0; i < 4; i++) gems.push({ x: e.x + (i - 1.5) * 14, y: e.y - 20, v: 5, k: 'coin', pull: false });
@@ -1569,6 +1570,7 @@ function die(e) {
 const areaMul = () => 1 + 0.12 * P.p.lupa + 0.04 * UP('area');
 function addXp(v) { const t = v * (ev && ev.k === 'party' ? 1.5 : ev && ev.k === 'rush' ? 2 : 1) * (1 + 0.15 * P.p.cache + 0.05 * UP('growth')) * MP('xp', 1) + P.xfrac, w = Math.floor(t + 1e-9); P.xfrac = t - w; P.xp += w; }
 const WNERF = 0.8, ENHP = 1.3, ENSPD = 1.07, ENDMG = 1.2, ENRATE = 1.15; /* difficulty: weapons weaker, enemies tougher */
+const UNDO_KILLS = 300; /* kills needed to earn one Ctrl+Z charge */
 function hit(e, dmg, kx, ky, kb, quiet) {
   if (dmg < 1e8) dmg *= WNERF;
   if (dropT > 0) dmg *= 2;
@@ -3049,7 +3051,7 @@ function hud() {
   upd('kills', P.kills, v => { $('kills').textContent = v + ' убито'; });
   upd('ch', P.charges, v => { document.querySelectorAll('.pip').forEach((el, i) => el.classList.toggle('on', i < v)); $('undoBtn').setAttribute('aria-disabled', v > 0 ? 'false' : 'true'); });
   upd('cutp', Math.round((1 - cutCd / CUT_CD) * 100), v => { $('cutProg').style.width = v + '%'; $('cutBtn').setAttribute('aria-disabled', v >= 100 ? 'false' : 'true'); $('cutBtn').classList.toggle('ready', v >= 100); });
-  upd('prog', P.prog, v => { $('prog').style.width = (v / 60 * 100) + '%'; });
+  upd('prog', P.prog, v => { $('prog').style.width = (v / UNDO_KILLS * 100) + '%'; });
   upd('throb', P.charges > 0 && P.hp < P.max * 0.3 && mode === 'play', v => { $('undoBtn').classList.toggle('throb', v); });
   upd('kit', kitVer, () => {
     const kit = $('kit'); kit.textContent = '';
