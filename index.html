@@ -216,6 +216,12 @@ h2{font-size:clamp(22px,6.5vw,28px)}
 .mapnote{font:700 11px var(--mono);color:var(--blue)}
 .shieldhud{justify-self:start;font:800 12px var(--mono);background:var(--shieldbg);border:2px solid var(--ink);padding:3px 8px;font-variant-numeric:tabular-nums}
 
+.reel{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0}
+.reel span{display:grid;place-items:center;height:84px;border:2px solid var(--ink);background:var(--white);font-size:40px;box-shadow:4px 4px 0 var(--blue)}
+.reel.spin span{animation:reelj .12s linear infinite}
+@keyframes reelj{50%{transform:translateY(-3px)}}
+.reel.win span{background:var(--sun)}
+.reel.lose span{background:var(--magenta)}
 .nickrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin:10px 0}
 .nickrow input{min-width:0;font:600 15px "IBM Plex Sans",sans-serif;padding:10px 12px;border:2px solid var(--ink);background:var(--white);color:var(--ink);border-radius:0}
 .toprow{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 10px;border:2px solid var(--ink);background:var(--white);font:600 14px "IBM Plex Sans",sans-serif}
@@ -274,6 +280,7 @@ h2{font-size:clamp(22px,6.5vw,28px)}
     <p>Смайлики идут на ваш макет. Рисуйте, стирайте, выделяйте и откатывайтесь на 3 секунды назад.</p>
     <div class="menu">
       <button class="btn" id="startBtn">Открыть файл</button>
+      <button class="btn alt" id="roulBtn" type="button">🎰 Рулетка казино</button>
       <div class="row"><button class="btn alt" id="mapChip" type="button">🗺 Карта</button><button class="btn alt" id="topBtn" type="button">🏆 Рекорды</button></div>
       <div class="row"><button class="btn alt" id="shopBtn">Магазин</button><button class="btn alt" id="chalBtn">Челленджи<span class="dot" id="chalDot" hidden>0</span></button></div>
       <div class="row"><button class="btn alt" id="achBtn">Достижения</button><button class="btn alt" id="bestBtn">Бестиарий</button></div>
@@ -282,6 +289,17 @@ h2{font-size:clamp(22px,6.5vw,28px)}
     </div>
     <div class="best" id="best"></div>
     <div class="credit"><span class="ver">Версия 3.0</span> · Игра разработана студией <b>OPENWORLD+</b></div>
+  </section>
+
+  <section class="panel" id="sRoul" hidden>
+    <div class="top"><div class="kicker">Казино студии</div><div class="wallet">🪙 <span id="walletRoul">0</span></div></div>
+    <h2>Рулетка</h2>
+    <p>Крутите за 2000 🪙 перед забегом. Выигрыш или проклятие действует на один следующий забег.</p>
+    <div class="reel" id="reel"><span>🎰</span><span>🎰</span><span>🎰</span></div>
+    <div class="achsum" id="roulRes">Испытайте удачу</div>
+    <div class="chal"><b>Что может выпасть</b><span>🎁 35%: три случайные способности на забег</span><span>🫥 40%: ничего, монеты пропали</span><span>💀 25%: проклятие, враги крепче и злее весь забег</span></div>
+    <button class="btn" id="spinBtn" type="button">Крутить за 2000 🪙</button>
+    <button class="btn alt" data-back>Назад</button>
   </section>
 
   <section class="panel" id="sTop" hidden>
@@ -310,6 +328,10 @@ h2{font-size:clamp(22px,6.5vw,28px)}
           <li>Лабиринты на всех картах: каждый забег генерируется новая схема стен. Стены блокируют вас, врагов и выстрелы, а между секторами всегда остаются свободные коридоры</li>
           <li>Лабиринт стал честной ареной: карта ограничена квадратом, стен больше, в углу экрана мини-карта с вашим положением, боссами и элитой</li>
           <li>Ctrl+Z стал редким: заряд даётся за 300 убийств (раньше за 60), подарок «+1 заряд» выпадает реже</li>
+          <li>Лечилки с врагов выпадают очень редко. Зато при получении урона из вас выбиваются монеты: они подпрыгивают, и их можно подобрать обратно за 7 секунд</li>
+          <li>Враги бьют вдвое сильнее: касание, выстрелы и атаки боссов</li>
+          <li>Рулетка казино в меню: 2000 🪙 за спин. Три способности на забег, пусто или проклятие, когда враги сильнее. Монеты теперь выпадают ещё реже</li>
+          <li>Новая вкладка магазина «Студия»: расходники на забег, легендарные курсы до 20 уровня и два дорогих курсора (Неон, Платина). Есть куда тратить много монет</li>
           <li>Монеты стали редкими: с обычных врагов выпадают почти никогда, награда в основном за боссов, элиту, принтеры и события</li>
           <li>Новая песня «ЧСВ» в плеере</li>
           <li>Плеер: кнопка ♪ слева над мини-картой. Песню можно слушать прямо во время игры, ставить на паузу и менять громкость</li>
@@ -453,9 +475,10 @@ h2{font-size:clamp(22px,6.5vw,28px)}
   <section class="panel" id="sShop" hidden>
     <div class="top"><div class="kicker">Магазин</div><div class="wallet">🪙 <span id="walletShop">0</span></div></div>
     <h2>Магазин</h2>
-    <div class="seg" id="shopTabs" role="group" aria-label="Раздел магазина"><button type="button" data-tab="skins">Курсоры</button><button type="button" data-tab="ups">Улучшения</button><button type="button" data-tab="maps">Карты</button></div>
+    <div class="seg" id="shopTabs" role="group" aria-label="Раздел магазина"><button type="button" data-tab="skins">Курсоры</button><button type="button" data-tab="ups">Улучшения</button><button type="button" data-tab="studio">Студия</button><button type="button" data-tab="maps">Карты</button></div>
     <div class="skins" id="skins"></div>
     <div class="skins" id="upgrades" hidden></div>
+    <div class="skins" id="studio" hidden></div>
     <div class="skins" id="maps" hidden></div>
     <button class="btn alt" id="refundBtn" hidden>Вернуть монеты за улучшения</button>
     <button class="btn alt" data-back>Назад</button>
@@ -631,15 +654,19 @@ const STRIDE = 10;
 const SKEY = 'design-survivors-save';
 const VERSION = '3.0';
 const STAT0 = { runs: 0, bossK: 0, coins: 0, kills: 0, bestT: 0, wins: 0, shield: 0, undos: 0, maxLvl: 0, coffee: 0, chests: 0, zapK: 0 };
-const SAVE = { coins: 0, skins: [1, 0, 0, 0, 0], skin: 0, music: 0.6, sfx: 0.8, theme: 'auto', stats: Object.assign({}, STAT0), claimed: {}, seen: '', up: {}, maps: [1, 0, 0, 0, 0], map: 0, mapBest: {}, track: 'auto', ach: {}, flags: {}, uid: '', nick: '', lbBest: 0 };
+const SAVE = { roul: null, leg: {}, items: {}, arm: {}, coins: 0, skins: [1, 0, 0, 0, 0, 0, 0], skin: 0, music: 0.6, sfx: 0.8, theme: 'auto', stats: Object.assign({}, STAT0), claimed: {}, seen: '', up: {}, maps: [1, 0, 0, 0, 0], map: 0, mapBest: {}, track: 'auto', ach: {}, flags: {}, uid: '', nick: '', lbBest: 0 };
 try {
   const o = JSON.parse(localStorage.getItem(SKEY) || 'null');
   if (o) {
     if (Number.isFinite(o.coins)) SAVE.coins = Math.max(0, Math.floor(o.coins));
-    if (Array.isArray(o.skins)) for (let i = 1; i < 5; i++) SAVE.skins[i] = o.skins[i] ? 1 : 0;
+    if (Array.isArray(o.skins)) for (let i = 1; i < 7; i++) SAVE.skins[i] = o.skins[i] ? 1 : 0;
     if (o.stats) for (const k in STAT0) if (Number.isFinite(o.stats[k])) SAVE.stats[k] = Math.max(0, o.stats[k]);
     if (o.claimed) for (const k in o.claimed) if (o.claimed[k]) SAVE.claimed[k] = 1;
     if (typeof o.seen === 'string') SAVE.seen = o.seen;
+    if (o.roul && (o.roul.k === 'curse' || (o.roul.k === 'buff' && Array.isArray(o.roul.b)))) SAVE.roul = o.roul.k === 'curse' ? { k: 'curse' } : { k: 'buff', b: o.roul.b.filter(x => typeof x === 'string').slice(0, 3) };
+    if (o.leg) for (const k in o.leg) if (Number.isFinite(o.leg[k]) && o.leg[k] > 0) SAVE.leg[k] = Math.min(20, Math.floor(o.leg[k]));
+    if (o.items) for (const k in o.items) if (Number.isFinite(o.items[k]) && o.items[k] > 0) SAVE.items[k] = Math.min(99, Math.floor(o.items[k]));
+    if (o.arm) for (const k in o.arm) if (o.arm[k] === false) SAVE.arm[k] = false;
     if (o.up) for (const k in o.up) if (Number.isFinite(o.up[k]) && o.up[k] > 0) SAVE.up[k] = Math.floor(o.up[k]);
     if (['auto', 'classic', 'drive', 'retro'].indexOf(o.track) >= 0) SAVE.track = o.track;
     if (o.ach) for (const k in o.ach) if (Number.isFinite(o.ach[k])) SAVE.ach[k] = o.ach[k];
@@ -662,7 +689,9 @@ const SKINS = [
   { name: 'Маркер', cost: 100, fill: '#ff2e93', line: 'ink', box: '#ff2e93', desc: 'Розовый, как правки клиента', buff: '+15% урона всех инструментов', dmg: 1.15, coin: 1, spd: 1, inv: 0 },
   { name: 'Золотой слой', cost: 250, fill: '#ffc233', line: 'ink', box: 'ink', trail: 'spark', desc: 'Оставляет золотые искры', buff: '+30% монет за забег', dmg: 1, coin: 1.3, spd: 1, inv: 0 },
   { name: 'Призрак', cost: 500, fill: '#ffffff', line: 'ink', box: '#ff2e93', dash: true, trail: 'ghost', desc: 'Пунктирная рамка и шлейф', buff: '+12% скорости и дольше неуязвимость после удара', dmg: 1, coin: 1, spd: 1.12, inv: 0.3 },
-  { name: 'OPENWORLD+', cost: 0, excl: true, fill: '#7a3cff', line: 'ink', box: '#ffc233', trail: 'spark', desc: 'Фирменный курсор студии', buff: '+10% урона, +10% монет, +6% скорости', dmg: 1.1, coin: 1.1, spd: 1.06, inv: 0 }
+  { name: 'OPENWORLD+', cost: 0, excl: true, fill: '#7a3cff', line: 'ink', box: '#ffc233', trail: 'spark', desc: 'Фирменный курсор студии', buff: '+10% урона, +10% монет, +6% скорости', dmg: 1.1, coin: 1.1, spd: 1.06, inv: 0 },
+  { name: 'Неон', cost: 4000, fill: '#00d9ff', line: 'ink', box: '#00d9ff', trail: 'spark', desc: 'Светится в темноте', buff: '+20% урона всех инструментов', dmg: 1.2, coin: 1, spd: 1, inv: 0 },
+  { name: 'Платина', cost: 12000, fill: '#f4f6ff', line: 'ink', box: '#ffc233', trail: 'ghost', dash: true, desc: 'Редкий слой для настоящих легенд', buff: '+25% урона, +10% скорости, +10% монет', dmg: 1.25, coin: 1.1, spd: 1.1, inv: 0 }
 ];
 /* workshop: permanent upgrades bought with coins */
 const UPS = [
@@ -679,6 +708,46 @@ const UPS = [
   { id: 'sharp', icon: '🖊️', name: 'Заточка пера', max: 2, base: 80, d: 'Перо стартует с более высоким уровнем', eff: l => 'перо с ' + (l + 1) + ' уровня' },
   { id: 'reroll', icon: '🔄', name: 'Другой вариант', max: 3, base: 60, d: '+1 обновление выбора на уровне за забег', eff: l => l + ' на забег' }
 ];
+/* studio: endless-ish coin sinks. Legendary tracks go to level 20, consumables are bought per run */
+const LEGS = [
+  { id: 'mast', icon: '⚔️', name: 'Мастерство', max: 20, base: 400, d: '+3% урона всех инструментов за уровень', eff: l => '+' + 3 * l + '% урона' },
+  { id: 'tough', icon: '🫀', name: 'Закалка', max: 20, base: 350, d: '+6 к максимуму HP за уровень', eff: l => '+' + 6 * l + ' HP' },
+  { id: 'lore', icon: '🧠', name: 'Опыт мастера', max: 20, base: 350, d: '+3% опыта за уровень', eff: l => '+' + 3 * l + '% опыта' },
+  { id: 'react', icon: '💨', name: 'Реакция', max: 15, base: 450, d: '+1% скорости и на 1% быстрее перезарядка за уровень', eff: l => '+' + l + '% скорости, -' + l + '% перезарядки' }
+];
+const LG = id => SAVE.leg[id] || 0;
+const legCost = (u, l) => Math.round(u.base * Math.pow(1.2, l) / 50) * 50;
+const ITEMS = [
+  { id: 'drink', icon: '🥤', name: 'Энергетик', cost: 300, d: '+25% урона на весь забег' },
+  { id: 'armor', icon: '🛡️', name: 'Бронепакет', cost: 200, d: 'Щит на 12 секунд в начале забега' },
+  { id: 'disk', icon: '🗂️', name: 'Резервный диск', cost: 500, d: '+1 заряд Ctrl+Z на забег' },
+  { id: 'course', icon: '📚', name: 'Курс повышения', cost: 350, d: '+50% опыта первые 4 минуты' }
+];
+const BUFFS = {
+  rage: ['🔥', 'Ярость', '+30% урона'], haste: ['💨', 'Спринт', '+20% скорости и перезарядки'], vamp: ['🩸', 'Вампиризм', '+3 HP за каждые 10 убийств'],
+  mag: ['🧲', 'Супермагнит', 'вдвое больший радиус сбора'], armor: ['❤️', 'Броня', '+40 к максимуму HP'], genius: ['🎓', 'Гений', '+40% опыта'], aegis: ['🛡️', 'Авто-щит', 'щит на 4 с каждые 45 с']
+};
+let runBuf = {}, runCurse = false, vampK = 0, aegisT = 45;
+function applyRoulette() {
+  runBuf = {}; runCurse = false; vampK = 0; aegisT = 45;
+  const r = SAVE.roul; if (!r) return;
+  SAVE.roul = null; persist();
+  if (r.k === 'curse') { runCurse = true; toast('💀 Проклятие рулетки: враги крепче, быстрее и злее'); return; }
+  const names = [];
+  for (const id of r.b) if (BUFFS[id]) { runBuf[id] = 1; names.push(BUFFS[id][0] + ' ' + BUFFS[id][1]); }
+  if (runBuf.armor) { P.hp += 40; P.max += 40; }
+  if (names.length) toast('🎰 Способности на забег: ' + names.join(', '));
+}
+let runDrink = false, runTutor = false;
+function applyItems() {
+  runDrink = runTutor = false; const used = [];
+  for (const it of ITEMS) {
+    if (!(SAVE.items[it.id] > 0) || SAVE.arm[it.id] === false) continue;
+    SAVE.items[it.id]--; used.push(it.icon);
+    if (it.id === 'drink') runDrink = true; else if (it.id === 'armor') P.shield = Math.max(P.shield, 12); else if (it.id === 'disk') P.charges++; else if (it.id === 'course') runTutor = true;
+  }
+  if (used.length) { persist(); toast('Расходники: ' + used.join(' ')); }
+}
 const upCost = (u, l) => Math.round(u.base * (1 + 0.8 * l) / 5) * 5;
 const upSpent = () => UPS.reduce((a, u) => { let t = 0; for (let l = 0; l < UP(u.id); l++) t += upCost(u, l); return a + t; }, 0);
 /* bestiary: what each enemy does and how to deal with it */
@@ -1141,14 +1210,14 @@ function newGame() {
   spawnAcc = 0; bossN = 0; recT = 0; rt = 0; hurtT = 0; levelPending = 0; won = false; undos = 0; eraserA = 0; gemT = 0; eraserPos = []; joy = null; kitVer++;
   dropT = 0; nextDrop = 40; spots = []; spotT = 18; scis = []; swings = []; rulerSide = 1; propT = 10; flashT = 0; newTier = 0; propHint = false;
   eshots = []; fx = []; ghosts = []; pops = []; shake = 0; xpPulse = 0; swarmT = 80; swarmFx = null; wizHint = false; prevKit = {}; lastPX = 0; lastPY = 0; trailT = 0; brushTrail = []; brushAcc = 0; lassos = []; marks = [];
-  P = { evo: {}, nEvo: 0, dmgN: 0, coffee: 0, bossK: 0, shieldN: 0, runCounted: false, sb: { kills: 0, bossK: 0, coins: 0, shield: 0, undos: 0 }, cfrac: 0, x: 0, y: 0, hp: 100 + 10 * UP('hp'), max: 100 + 10 * UP('hp'), inv: 0, xp: 0, lvl: 1, need: needFor(1), kills: 0, charges: 1 + UP('revive'), prog: 0, rerolls: UP('reroll'),
+  P = { evo: {}, nEvo: 0, dmgN: 0, coffee: 0, bossK: 0, shieldN: 0, runCounted: false, sb: { kills: 0, bossK: 0, coins: 0, shield: 0, undos: 0 }, cfrac: 0, x: 0, y: 0, hp: 100 + 10 * UP('hp') + 6 * LG('tough'), max: 100 + 10 * UP('hp') + 6 * LG('tough'), inv: 0, xp: 0, lvl: 1, need: needFor(1), kills: 0, charges: 1 + UP('revive'), prog: 0, rerolls: UP('reroll'),
         coins: 0, banked: 0, shield: 0, w: { pen: 1 + UP('sharp') }, p: { hand: 0, mag: 0, cof: 0, lay: 0, lupa: 0, bold: 0, save: 0, cont: 0, cache: 0 }, xfrac: 0, cd: { pen: 0.3, eraser: 0, select: 1.5, bucket: 1 } };
   cam.x = 0; cam.y = 0;
 }
 
 /* ---------- ui helpers ---------- */
 const scrim = $('scrim');
-const sections = ['sMenu', 'sLevel', 'sPause', 'sOver', 'sWin', 'sShop', 'sSet', 'sHow', 'sChal', 'sNews', 'sBest', 'sAch', 'sTop'];
+const sections = ['sRoul', 'sMenu', 'sLevel', 'sPause', 'sOver', 'sWin', 'sShop', 'sSet', 'sHow', 'sChal', 'sNews', 'sBest', 'sAch', 'sTop'];
 function show(id) {
   scrim.hidden = !id;
   sections.forEach(s => { $(s).hidden = s !== id; });
@@ -1167,7 +1236,7 @@ function showBest() { const b = getBest(); $('best').textContent = b ? 'Реко
 
 /* ---------- spawning ---------- */
 /* ---------- procedural maze: walls are generated per 640 px block, lanes 80 px wide between blocks always stay open ---------- */
-const WU = 40, WPER = 16, WLANE = 2, BLK = WU * WPER;
+const WU = 40, WPER = 16, BLK = WU * WPER;
 let wallSeed = 1, wallMap = new Map(), wNx = 0, wNy = 0;
 const AB = 3, AH = AB * BLK; /* arena: 2*AB blocks per side, solid rock outside */
 const outBlk = (bx, by) => bx < -AB || bx >= AB || by < -AB || by >= AB;
@@ -1178,19 +1247,42 @@ function blockWalls(bx, by) {
   if (w) return w;
   w = [];
   if (outBlk(bx, by)) { w.push(bx * BLK, by * BLK, bx * BLK + BLK, by * BLK + BLK); wallMap.set(key, w); return w; }
-  const rn = mulberry(wallSeed ^ Math.imul(bx, 73856093) ^ Math.imul(by, 19349663)), ux0 = bx * WPER + WLANE, uy0 = by * WPER + WLANE, SZ = WPER - WLANE;
-  const n = Math.round((7 + rn() * 8) * (0.75 + rn() * 0.5));
-  for (let i = 0; i < n; i++) {
-    const t = rn(); let cw, ch;
-    if (t < 0.34) { const L = 3 + Math.floor(rn() * 10); if (rn() < 0.5) { cw = L; ch = 1; } else { cw = 1; ch = L; } }
-    else if (t < 0.58) { const L = 2 + Math.floor(rn() * 7); if (rn() < 0.5) { cw = L; ch = 2; } else { cw = 2; ch = L; } }
-    else if (t < 0.85) { cw = 2 + Math.floor(rn() * 4); ch = 2 + Math.floor(rn() * 4); }
-    else { cw = 1 + Math.floor(rn() * 2); ch = 1 + Math.floor(rn() * 2); }
-    cw = Math.min(cw, SZ); ch = Math.min(ch, SZ);
-    const x0 = (ux0 + Math.floor(rn() * (SZ - cw + 1))) * WU, y0 = (uy0 + Math.floor(rn() * (SZ - ch + 1))) * WU, x1 = x0 + cw * WU, y1 = y0 + ch * WU;
-    const cx = Math.max(x0, Math.min(0, x1)), cy = Math.max(y0, Math.min(0, y1));
-    if (cx * cx + cy * cy < 300 * 300) continue; /* keep the start area clear */
-    w.push(x0, y0, x1, y1);
+  const rn = mulberry(wallSeed ^ Math.imul(bx, 73856093) ^ Math.imul(by, 19349663)), ux = bx * WPER, uy = by * WPER;
+  const ri = (lo, hi) => lo + Math.floor(rn() * (hi - lo + 1)), thick = () => { const r = rn(); return r < 0.45 ? 1 : r < 0.8 ? 2 : 3; };
+  /* 1) split the block into leaves (BSP), 2) put one clean piece into each leaf with a 1-unit margin, so pieces never touch or overlap */
+  const leaves = [];
+  (function split(x, y, ww, hh) {
+    const canW = ww >= 8, canH = hh >= 8;
+    if ((canW || canH) && (Math.max(ww, hh) > 10 || rn() < 0.3)) {
+      if (canW && (!canH || ww >= hh)) { const c = ri(4, ww - 4); split(x, y, c, hh); split(x + c, y, ww - c, hh); }
+      else { const c = ri(4, hh - 4); split(x, y, ww, c); split(x, y + c, ww, hh - c); }
+    } else leaves.push([x, y, ww, hh]);
+  })(0, 0, WPER, WPER);
+  for (const [lx, ly, lw, lh] of leaves) {
+    const ix = lx + 1, iy = ly + 1, iw = lw - 2, ih = lh - 2, R = [], t = rn();
+    if (t < 0.07) continue; /* open plaza */
+    if (t < 0.5) { /* bar: thin or medium, long */
+      const horiz = iw === ih ? rn() < 0.5 : iw > ih, lon = horiz ? iw : ih, sho = horiz ? ih : iw, th = Math.min(thick(), sho), len = Math.max(Math.min(2, lon), Math.round(lon * (0.8 + 0.2 * rn())));
+      const a0 = ri(0, lon - len), c0 = ri(0, sho - th);
+      if (horiz) R.push(ix + a0, iy + c0, ix + a0 + len, iy + c0 + th); else R.push(ix + c0, iy + a0, ix + c0 + th, iy + a0 + len);
+    } else if (t < 0.7) { /* solid block */
+      const bw = ri(Math.min(Math.max(2, Math.ceil(iw * 0.6)), iw), iw), bh = ri(Math.min(Math.max(2, Math.ceil(ih * 0.6)), ih), ih), x0 = ri(0, iw - bw), y0 = ri(0, ih - bh);
+      R.push(ix + x0, iy + y0, ix + x0 + bw, iy + y0 + bh);
+    } else if (t < 0.93) { /* L corner */
+      const ta = Math.min(1 + (rn() < 0.4 ? 1 : 0), ih), tb = Math.min(1 + (rn() < 0.4 ? 1 : 0), iw), la = ri(Math.min(Math.ceil(iw * 0.6), iw), iw), lb = ri(Math.min(Math.ceil(ih * 0.6), ih), ih), right = rn() < 0.5, bot = rn() < 0.5;
+      const hx0 = right ? ix + iw - la : ix, hy0 = bot ? iy + ih - ta : iy, vx0 = right ? ix + iw - tb : ix, vy0 = bot ? iy + ih - lb : iy;
+      R.push(hx0, hy0, hx0 + la, hy0 + ta, vx0, vy0, vx0 + tb, vy0 + lb);
+    } else { /* two pillars */
+      const s1 = ri(1, Math.min(2, iw, ih)), s2 = ri(1, Math.min(2, iw, ih));
+      R.push(ix, iy, ix + s1, iy + s1, ix + iw - s2, iy + ih - s2, ix + iw, iy + ih);
+    }
+    const px = []; let clear = true;
+    for (let i = 0; i < R.length; i += 4) {
+      const x0 = (ux + R[i]) * WU, y0 = (uy + R[i + 1]) * WU, x1 = (ux + R[i + 2]) * WU, y1 = (uy + R[i + 3]) * WU, cx = Math.max(x0, Math.min(0, x1)), cy = Math.max(y0, Math.min(0, y1));
+      if (cx * cx + cy * cy < 320 * 320) clear = false; /* keep the start area clear */
+      px.push(x0, y0, x1, y1);
+    }
+    if (clear) for (const v of px) w.push(v);
   }
   wallMap.set(key, w);
   return w;
@@ -1240,12 +1332,14 @@ function drawWalls(vx0, vy0, vw, vh) {
   }
   if (!list.length) return;
   ctx.fillStyle = 'rgba(47,91,255,.30)';
-  for (let i = 0; i < list.length; i += 4) ctx.fillRect(list[i] + 5, list[i + 1] + 5, list[i + 2], list[i + 3]);
-  ctx.fillStyle = dark ? '#252c4c' : '#d6dae6';
-  for (let i = 0; i < list.length; i += 4) ctx.fillRect(list[i], list[i + 1], list[i + 2], list[i + 3]);
-  ctx.lineWidth = 2; ctx.strokeStyle = COL.ink; ctx.globalAlpha = 0.85;
+  for (let i = 0; i < list.length; i += 4) ctx.fillRect(list[i] + 6, list[i + 1] + 6, list[i + 2], list[i + 3]);
+  /* outline first, fill on top: pieces made of several rects get one seamless silhouette */
+  ctx.lineWidth = 6; ctx.lineJoin = 'round'; ctx.strokeStyle = dark ? '#8d98cf' : COL.ink; ctx.globalAlpha = dark ? 0.9 : 0.85;
   for (let i = 0; i < list.length; i += 4) ctx.strokeRect(list[i], list[i + 1], list[i + 2], list[i + 3]);
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha = 1; ctx.fillStyle = dark ? '#252c4c' : '#dfe3ee';
+  for (let i = 0; i < list.length; i += 4) ctx.fillRect(list[i], list[i + 1], list[i + 2], list[i + 3]);
+  ctx.fillStyle = dark ? 'rgba(255,255,255,.05)' : 'rgba(47,91,255,.07)';
+  for (let i = 0; i < list.length; i += 4) ctx.fillRect(list[i] + 8, list[i + 1] + 8, Math.max(0, list[i + 2] - 16), Math.max(0, list[i + 3] - 16));
 }
 /* minimap: the whole arena, pre-rendered once per run */
 let miniSpr = null, miniSeed = 0; const MS = 92;
@@ -1277,8 +1371,8 @@ function ringR() { return Math.hypot(W, H) / scale / 2 + 50; }
 function makeEnemy(tier, x, y) { const o = makeEnemy0(tier, x, y); wallPush(o, wr(o)); return o; }
 function makeEnemy0(tier, x, y) {
   const d = TIERS[tier];
-  const hp0 = isBoss(tier) ? d.hp * (1 + bossN * 0.7) : tier === PROP ? 28 + T * 0.05 : d.hp * (1 + T / 150), hp = tier === PROP ? hp0 : hp0 * MP('hp', 1) * ENHP;
-  return { id: ids++, tier, x, y, hp, max: hp, r: d.r, spd: d.spd * rnd(0.9, 1.1) * MP('spd', 1) * ENSPD, dmg: Math.round(d.dmg * ENDMG), xp: d.xp,
+  const hp0 = isBoss(tier) ? d.hp * (1 + bossN * 0.7) : tier === PROP ? 28 + T * 0.05 : d.hp * (1 + T / 150), hp = tier === PROP ? hp0 : hp0 * MP('hp', 1) * ENHP * (runCurse ? 1.5 : 1);
+  return { id: ids++, tier, x, y, hp, max: hp, r: d.r, spd: d.spd * rnd(0.9, 1.1) * MP('spd', 1) * ENSPD * (runCurse ? 1.15 : 1), dmg: Math.round(d.dmg * ENDMG * (runCurse ? 1.4 : 1)), xp: d.xp,
            flash: 0, kx: 0, ky: 0, slow: 0, eT: -9, sT: -9, dead: false, ph: rnd(0, TAU), cx: 0, cy: 0,
            vx: 0, vy: 0, sl: 0, age: 0, fT: rnd(1, 2.5), st: 0, dvx: 0, dvy: 0, bT: -9 };
 }
@@ -1435,7 +1529,7 @@ function spawnElite() {
   eliteHint = true;
 }
 function spawn(dt) {
-  spawnAcc += (2.3 + T * 0.032) * MP('rate', 1) * ENRATE * evRate * dt;
+  spawnAcc += (2.3 + T * 0.032) * MP('rate', 1) * ENRATE * (runCurse ? 1.2 : 1) * evRate * dt;
   const cap = Math.min(200, 80 + T * 0.5);
   const m = Math.min(10, Math.floor(T / 60));
   if (m > newTier) {
@@ -1532,6 +1626,7 @@ function die(e) {
     return;
   }
   P.kills++; P.prog++;
+  if (runBuf.vamp && ++vampK >= 10) { vampK = 0; P.hp = Math.min(P.max, P.hp + 3); }
   sfx('kill');
   killT.push(T); while (killT.length && T - killT[0] > 4) killT.shift();
   if (killT.length === 15 || killT.length === 30 || killT.length === 50 || killT.length === 80) say('РАЗНОС ×' + killT.length, COL.blue, 2);
@@ -1541,13 +1636,12 @@ function die(e) {
     P.bossK++;
     if (e.tier === BOSS2) for (let i = 0; i < 4; i++) gems.push({ x: e.x + (i - 1.5) * 14, y: e.y - 20, v: 5, k: 'coin', pull: false });
     gems.push({ x: e.x, y: e.y, v: P.need, k: 'big', pull: false });
-    gems.push({ x: e.x + 18, y: e.y, v: 0, k: 'heart', pull: false });
-    gems.push({ x: e.x - 18, y: e.y, v: 0, k: 'heart', pull: false });
+    if (Math.random() < 0.5) gems.push({ x: e.x + 18, y: e.y, v: 0, k: 'heart', pull: false });
     for (let i = 0; i < 4; i++) gems.push({ x: e.x + (i - 1.5) * 14, y: e.y + 20, v: 5, k: 'coin', pull: false });
   } else {
     gems.push({ x: e.x, y: e.y, v: e.xp, k: e.xp >= 4 ? 'g3' : e.xp >= 2 ? 'g2' : 'g1', pull: false });
-    if (Math.random() < 0.03) gems.push({ x: e.x + 8, y: e.y + 4, v: 0, k: 'heart', pull: false });
-    if (Math.random() < 0.012 && gems.length < 160) gems.push({ x: e.x - 8, y: e.y + 4, v: 1, k: 'coin', pull: false });
+    if (Math.random() < 0.004) gems.push({ x: e.x + 8, y: e.y + 4, v: 0, k: 'heart', pull: false });
+    if (Math.random() < 0.01 && gems.length < 160) gems.push({ x: e.x - 8, y: e.y + 4, v: 1, k: 'coin', pull: false });
   }
   if (ghosts.length < 40) ghosts.push({ x: e.x, y: e.y, tier: e.tier, t: 0 });
   if (isElite(e.tier)) {
@@ -1555,7 +1649,7 @@ function die(e) {
     addRing(e.x, e.y, 6, 110, 0.5, '#ffb400', 5);
     for (let i = 0; i < 3; i++) gems.push({ x: e.x + (i - 1) * 14, y: e.y - 14, v: 3, k: 'coin', pull: false });
     gems.push({ x: e.x + 10, y: e.y + 12, v: 6, k: 'g3', pull: false });
-    if (Math.random() < 0.5) gems.push({ x: e.x - 12, y: e.y + 10, v: 0, k: 'heart', pull: false });
+    if (Math.random() < 0.12) gems.push({ x: e.x - 12, y: e.y + 10, v: 0, k: 'heart', pull: false });
     for (let i = 0; i < 22 && parts.length < 190; i++) { const a = rnd(0, TAU), sp = rnd(60, 200); parts.push({ x: e.x, y: e.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.6, c: i & 1 ? '#ffb400' : COL.sun, sz: 4 }); }
   }
   const boss = isBoss(e.tier);
@@ -1568,13 +1662,13 @@ function die(e) {
   }
 }
 const areaMul = () => 1 + 0.12 * P.p.lupa + 0.04 * UP('area');
-function addXp(v) { const t = v * (ev && ev.k === 'party' ? 1.5 : ev && ev.k === 'rush' ? 2 : 1) * (1 + 0.15 * P.p.cache + 0.05 * UP('growth')) * MP('xp', 1) + P.xfrac, w = Math.floor(t + 1e-9); P.xfrac = t - w; P.xp += w; }
-const WNERF = 0.8, ENHP = 1.3, ENSPD = 1.07, ENDMG = 1.2, ENRATE = 1.15; /* difficulty: weapons weaker, enemies tougher */
+function addXp(v) { const t = v * (ev && ev.k === 'party' ? 1.5 : ev && ev.k === 'rush' ? 2 : 1) * (1 + 0.15 * P.p.cache + 0.05 * UP('growth')) * (1 + 0.03 * LG('lore')) * (runTutor && T < 240 ? 1.5 : 1) * (runBuf.genius ? 1.4 : 1) * MP('xp', 1) + P.xfrac, w = Math.floor(t + 1e-9); P.xfrac = t - w; P.xp += w; }
+const WNERF = 0.8, ENHP = 1.3, ENSPD = 1.07, ENDMG = 2.4, ENRATE = 1.15; /* difficulty: weapons weaker, enemies tougher */
 const UNDO_KILLS = 300; /* kills needed to earn one Ctrl+Z charge */
 function hit(e, dmg, kx, ky, kb, quiet) {
   if (dmg < 1e8) dmg *= WNERF;
   if (dropT > 0) dmg *= 2;
-  dmg *= (1 + 0.1 * P.p.bold) * SKINS[SAVE.skin].dmg * (1 + 0.05 * UP('might'));
+  dmg *= (1 + 0.1 * P.p.bold) * SKINS[SAVE.skin].dmg * (1 + 0.05 * UP('might')) * (1 + 0.03 * LG('mast')) * (runDrink ? 1.25 : 1) * (runBuf.rage ? 1.3 : 1);
   const crit = P.p.cont > 0 && Math.random() < 0.08 * P.p.cont;
   if (crit) { dmg *= 2; addRing(e.x, e.y, 4, e.r * 2.2, 0.25, COL.sun, 3); }
   e.hp -= dmg; e.flash = 0.09;
@@ -1589,6 +1683,19 @@ function hit(e, dmg, kx, ky, kb, quiet) {
 function hurt(n) {
   if (P.shield > 0) { P.inv = 0.15; shieldHit = 1; sfx('block'); addRing(P.x, P.y, 20, 40, 0.25, '#19a7ff', 3); return; }
   sfx('hurt'); P.dmgN++; P.hp -= n; P.inv = 0.55 + SKINS[SAVE.skin].inv; hurtT = 0.3; shake = Math.max(shake, 4); addRing(P.x, P.y, 10, 42, 0.3, COL.magenta, 3);
+  loseCoins();
+}
+/* getting hit knocks run coins out of the player: they bounce around and can be picked up again for a few seconds */
+function loseCoins() {
+  const un = P.coins - P.banked; if (un <= 0) return;
+  const lose = Math.min(un, Math.max(1, Math.ceil(un * 0.25))), n = Math.min(lose, 8), base = Math.floor(lose / n), rem = lose - base * n;
+  P.coins -= lose;
+  for (let i = 0; i < n; i++) {
+    const a = rnd(0, TAU), sp = rnd(70, 170);
+    gems.push({ x: P.x, y: P.y, v: base + (i < rem ? 1 : 0), k: 'coin', back: true, pull: false, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, z: 6, vz: rnd(260, 420), lock: 0.7, ttl: 7 });
+  }
+  addPop(P.x, P.y - 30, '-' + lose + ' 🪙', COL.magenta);
+  for (let q = 0; q < 8 && parts.length < 180; q++) parts.push({ x: P.x, y: P.y, vx: rnd(-120, 120), vy: rnd(-140, -20), life: 0.45, c: COL.sun, sz: 3 });
 }
 
 /* in-place filter: no new array per frame, so the GC has nothing to collect */
@@ -1615,7 +1722,7 @@ function updateEshots(dt) {
     s.x += s.vx * dt; s.y += s.vy * dt; s.life -= dt;
     if (wallAt(s.x, s.y, 2)) continue;
     const dx = P.x - s.x, dy = P.y - s.y;
-    if (dx * dx + dy * dy < 144 && P.inv <= 0) { hurt(6 * (1 + T / 400)); continue; }
+    if (dx * dx + dy * dy < 144 && P.inv <= 0) { hurt(12 * (1 + T / 400)); continue; }
     if (s.life > 0) eshots[w++] = s;
   }
   eshots.length = w;
@@ -1741,7 +1848,7 @@ function updateMarks(dt) {
   keep(marks, m => !m.done);
 }
 function runWeapons(dt) {
-  const cm = Math.max(0.35, (1 - 0.1 * P.p.cof - 0.03 * UP('haste')) * (P.coffee > 0 ? 0.75 : 1));
+  const cm = Math.max(0.3, (1 - 0.1 * P.p.cof - 0.03 * UP('haste') - 0.01 * LG('react') - (runBuf.haste ? 0.15 : 0)) * (P.coffee > 0 ? 0.75 : 1));
   let l;
   if ((l = P.w.pen)) {
     P.cd.pen -= dt;
@@ -1869,7 +1976,7 @@ function update(dt) {
   }
   const m = Math.hypot(mx, my);
   if (m > 1) { mx /= m; my /= m; }
-  const spd = 150 * (1 + 0.12 * P.p.hand) * SKINS[SAVE.skin].spd * (1 + 0.03 * UP('speed')) * (P.coffee > 0 ? 1.35 : 1);
+  const spd = 150 * (1 + 0.12 * P.p.hand) * SKINS[SAVE.skin].spd * (1 + 0.03 * UP('speed')) * (1 + 0.01 * LG('react')) * (runBuf.haste ? 1.2 : 1) * (P.coffee > 0 ? 1.35 : 1);
   P.x += mx * spd * dt; P.y += my * spd * dt; wallPush(P, 9);
   const rg = 0.4 * P.p.save + 0.1 * UP('regen');
   if (rg > 0 && P.hp < P.max) {
@@ -1880,6 +1987,7 @@ function update(dt) {
   P.coffee = Math.max(0, P.coffee - dt);
   P.shield = Math.max(0, P.shield - dt); shieldHit = Math.max(0, shieldHit - dt * 5);
   updateSub(dt);
+  if (runBuf.aegis && (aegisT -= dt) <= 0) { aegisT = 45; P.shield = Math.max(P.shield, 4); }
   if (PL.sel === 1 && PL.on && PL.au && !PL.au.paused && window.LYRICS && window.LYRICS.length) {
     const ct = PL.au.currentTime; let k = -1;
     for (let i = 0; i < LYRICS.length; i++) { if (LYRICS[i][0] <= ct) k = i; else break; }
@@ -2040,18 +2148,26 @@ function update(dt) {
   keep(puddles, p => p.t < p.life);
   updateSpots(dt);
 
-  const mag = 70 * (1 + 0.35 * P.p.mag) * (1 + 0.08 * UP('magnet')) * MP('mag', 1);
+  const mag = 70 * (1 + 0.35 * P.p.mag) * (1 + 0.08 * UP('magnet')) * (runBuf.mag ? 2 : 1) * MP('mag', 1);
   let gw = 0, pend = null;
   flashT = Math.max(0, flashT - dt);
   for (let i = 0; i < gems.length; i++) {
     const g = gems[i];
+    if (g.back) { /* dropped coin: toss, bounce, wait a moment, expire */
+      if ((g.ttl -= dt) <= 0) continue;
+      const nx = g.x + g.vx * dt, ny = g.y + g.vy * dt;
+      if (!wallAt(nx, ny, 6)) { g.x = nx; g.y = ny; } else { g.vx = -g.vx * 0.5; g.vy = -g.vy * 0.5; }
+      const fr = Math.pow(0.05, dt); g.vx *= fr; g.vy *= fr;
+      g.vz -= 900 * dt; g.z += g.vz * dt; if (g.z < 0) { g.z = 0; g.vz = Math.abs(g.vz) > 90 ? -g.vz * 0.5 : 0; }
+      if ((g.lock -= dt) > 0) { gems[gw++] = g; continue; }
+    }
     const dx = P.x - g.x, dy = P.y - g.y, d = Math.hypot(dx, dy) || 1;
-    if (d < mag) g.pull = true;
+    if (d < (g.back ? 36 : mag)) g.pull = true;
     if (g.pull) { const s = Math.min(300 * dt, d); g.x += dx / d * s; g.y += dy / d * s; }
     if (d < 14) {
       const k = g.k;
       if (k === 'coin') {
-        const sum = g.v * SKINS[SAVE.skin].coin * (1 + 0.05 * UP('greed')) * MP('coin', 1) + P.cfrac, whole = Math.floor(sum + 1e-9); P.cfrac = sum - whole; P.coins += whole;
+        const sum = g.back ? g.v : g.v * SKINS[SAVE.skin].coin * (1 + 0.05 * UP('greed')) * MP('coin', 1) * 0.4 + P.cfrac, whole = Math.floor(sum + 1e-9); if (!g.back) P.cfrac = sum - whole; P.coins += whole;
         sfx('coin'); if (whole > 0) addPop(P.x, P.y - 24, '+' + whole, COL.sun); if (parts.length < 170) for (let q = 0; q < 4; q++) parts.push({ x: P.x, y: P.y, vx: rnd(-80, 80), vy: rnd(-100, -30), life: 0.4, c: COL.sun, sz: 3 });
       }
       else if (k === 'heart') { sfx('heart'); P.hp = Math.min(P.max, P.hp + 15); addPop(P.x, P.y - 24, '+15', COL.magenta); addRing(P.x, P.y, 8, 36, 0.3, COL.magenta, 2); }
@@ -2311,7 +2427,7 @@ function openSpot(s) {
     P.coffee = 10; SAVE.stats.coffee++; sfx('bonus'); toast('☕ Кофеин: быстрее бег и перезарядка на 10 секунд');
     addRing(P.x, P.y, 10, 90, 0.4, '#a86a32', 4);
   } else {
-    SAVE.stats.chests++; sfx('chest'); P.xp = Math.max(P.xp, P.need); P.coins += 20; addPop(P.x, P.y - 24, '+20', COL.sun);
+    SAVE.stats.chests++; sfx('chest'); P.xp = Math.max(P.xp, P.need); P.coins += 8; addPop(P.x, P.y - 24, '+8', COL.sun);
     toast('📦 Папка открыта: бесплатный уровень и 20 🪙');
     addRing(P.x, P.y, 10, 100, 0.45, COL.sun, 4); addRing(P.x, P.y, 6, 60, 0.35, COL.magenta, 3);
   }
@@ -2413,7 +2529,7 @@ function menuScene() {
 function startGame() {
   runMap = SAVE.maps[SAVE.map] ? SAVE.map : 0;
   if (!inRun || MAPS[runMap].ui || MAPS[runMap].pal) { inRun = true; applyTheme(); } else inRun = true;
-  newGame(); mode = 'play'; show(null); setMusic('game'); duck(1);
+  newGame(); applyItems(); applyRoulette(); mode = 'play'; show(null); setMusic('game'); duck(1);
   for (let i = 0; i < 6; i++) addEnemy(0);
 }
 function commitStats() {
@@ -2483,6 +2599,7 @@ function refreshMenu() {
   const r = chalReady(); $('chalDot').hidden = !r; $('chalDot').textContent = r;
   $('newsDot').hidden = SAVE.seen === VERSION;
   $('mapChip').textContent = '🗺 Карта: ' + MAPS[SAVE.map].name;
+  $('roulBtn').textContent = SAVE.roul ? '🎰 Рулетка: эффект ждёт забега' : '🎰 Рулетка казино';
   checkAch();
 }
 function goMenu() {
@@ -2503,7 +2620,7 @@ function gameOver() {
   if (chalReady()) toast('🏆 Челлендж выполнен! Награда ждёт в меню');
 }
 function winScreen() {
-  SAVE.stats.wins++; P.coins += 50; const got = bank(); checkAch();
+  SAVE.stats.wins++; P.coins += 25; const got = bank(); checkAch();
   lastRun = { t: T, kills: P.kills, win: true };
   $('winTxt').textContent = 'Вы продержались до сдачи макета. Клиент доволен, пока не откроет файл. Монеты в копилку: +' + got + ' 🪙 (бонус за сдачу 50).';
   sfx('win'); show('sWin');
@@ -2581,6 +2698,76 @@ function renderUps() {
   }
   $('refundBtn').textContent = 'Вернуть ' + upSpent() + ' 🪙 за улучшения';
 }
+function renderStudio() {
+  const box = $('studio'); box.textContent = '';
+  const head = (t, d) => { const h = document.createElement('div'); h.className = 'chal'; const b = document.createElement('b'); b.textContent = t; const sp = document.createElement('span'); sp.textContent = d; h.append(b, sp); box.appendChild(h); };
+  head('Расходники на забег', 'Покупаются заранее. На старте тратится по одному, если включено. Откладывать можно сколько угодно.');
+  for (const it of ITEMS) {
+    const n = SAVE.items[it.id] || 0, on = SAVE.arm[it.id] !== false;
+    const row = document.createElement('div'); row.className = 'chal';
+    const t = document.createElement('b'); t.textContent = it.icon + ' ' + it.name + ' · в запасе: ' + n;
+    const d = document.createElement('span'); d.textContent = it.d;
+    const buy = document.createElement('button'); buy.type = 'button'; buy.className = 'btn';
+    if (SAVE.coins < it.cost) { buy.textContent = it.cost + ' 🪙: не хватает ' + (it.cost - SAVE.coins); buy.disabled = true; }
+    else { buy.textContent = 'Купить за ' + it.cost + ' 🪙'; buy.addEventListener('click', () => { if (SAVE.coins < it.cost || (SAVE.items[it.id] || 0) >= 99) return; SAVE.coins -= it.cost; SAVE.items[it.id] = (SAVE.items[it.id] || 0) + 1; persist(); sfx('buy'); renderShop(); }); }
+    const tg = document.createElement('button'); tg.type = 'button'; tg.className = 'btn alt'; tg.textContent = on ? 'В забег: включено' : 'В забег: выключено';
+    tg.addEventListener('click', () => { SAVE.arm[it.id] = !on; persist(); renderShop(); });
+    row.append(t, d, buy, tg); box.appendChild(row);
+  }
+  head('Легендарные курсы', 'До 20 уровня. Цена растёт на 20% с каждым уровнем. Монеты за них не возвращаются.');
+  for (const u of LEGS) {
+    const lv = LG(u.id), maxed = lv >= u.max, cost = maxed ? 0 : legCost(u, lv);
+    const row = document.createElement('div'); row.className = 'chal' + (maxed ? ' done' : '');
+    const t = document.createElement('b'); t.textContent = u.icon + ' ' + u.name;
+    const d = document.createElement('span'); d.textContent = u.d;
+    const bar = document.createElement('div'); bar.className = 'pbar'; const fill = document.createElement('i'); fill.style.width = (lv / u.max * 100) + '%'; bar.appendChild(fill);
+    const meta = document.createElement('div'); meta.className = 'meta';
+    const a = document.createElement('span'); a.textContent = 'Ур. ' + lv + '/' + u.max; const b2 = document.createElement('span'); b2.textContent = lv ? 'Сейчас: ' + u.eff(lv) : 'Не куплено';
+    meta.append(a, b2);
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn';
+    if (maxed) { btn.textContent = 'Максимум'; btn.disabled = true; btn.className = 'btn alt'; }
+    else if (SAVE.coins < cost) { btn.textContent = cost + ' 🪙: не хватает ' + (cost - SAVE.coins); btn.disabled = true; }
+    else { btn.textContent = 'Улучшить за ' + cost + ' 🪙'; btn.addEventListener('click', () => { if (SAVE.coins < cost) return; SAVE.coins -= cost; SAVE.leg[u.id] = lv + 1; persist(); sfx('buy'); renderShop(); }); }
+    row.append(t, d, bar, meta, btn); box.appendChild(row);
+  }
+}
+const ROUL_COST = 2000;
+let spinning = false;
+function renderRoul() {
+  $('walletRoul').textContent = SAVE.coins;
+  const sb = $('spinBtn'), pend = SAVE.roul;
+  sb.disabled = spinning || SAVE.coins < ROUL_COST || !!pend;
+  sb.textContent = spinning ? 'Крутится…' : pend ? 'Эффект уже ждёт забега' : SAVE.coins < ROUL_COST ? ROUL_COST + ' 🪙: не хватает ' + (ROUL_COST - SAVE.coins) : 'Крутить за ' + ROUL_COST + ' 🪙';
+  if (pend && !spinning) {
+    const rl = $('roulRes');
+    rl.textContent = pend.k === 'curse' ? '💀 Ждёт проклятие: враги будут сильнее' : '🎁 Ждут способности: ' + pend.b.map(id => BUFFS[id] ? BUFFS[id][0] + ' ' + BUFFS[id][1] : '').join(', ');
+  }
+}
+function spinRoulette() {
+  if (spinning || SAVE.roul || SAVE.coins < ROUL_COST) return;
+  SAVE.coins -= ROUL_COST; spinning = true;
+  const r = Math.random(), reel = $('reel'), cells = reel.querySelectorAll('span');
+  let res, fin;
+  if (r < 0.35) { const ids = Object.keys(BUFFS).sort(() => Math.random() - 0.5).slice(0, 3); res = { k: 'buff', b: ids }; fin = ids.map(id => BUFFS[id][0]); }
+  else if (r < 0.75) { res = null; fin = ['🫥', '🫥', '🫥']; }
+  else { res = { k: 'curse' }; fin = ['💀', '💀', '💀']; }
+  SAVE.roul = res; persist(); renderRoul();
+  reel.className = 'reel spin'; $('roulRes').textContent = 'Крутится…';
+  const pool = ['🔥', '💨', '🩸', '🧲', '❤️', '🎓', '🛡️', '💀', '🫥', '🎰'], t0 = Date.now();
+  const iv = setInterval(() => {
+    const el = Date.now() - t0;
+    cells.forEach((c, i) => { if (el < 900 + i * 450) c.textContent = pool[(Math.random() * pool.length) | 0]; else c.textContent = fin[i]; });
+    if (el > 900 + 2 * 450 + 80) {
+      clearInterval(iv); spinning = false;
+      if (res && res.k === 'buff') { reel.className = 'reel win'; sfx('chest'); $('roulRes').textContent = '🎁 Три способности на следующий забег: ' + res.b.map(id => BUFFS[id][1]).join(', '); }
+      else if (res) { reel.className = 'reel lose'; sfx('boss'); $('roulRes').textContent = '💀 Проклятие! В следующем забеге враги крепче, быстрее и злее'; }
+      else { reel.className = 'reel'; sfx('nope'); $('roulRes').textContent = '🫥 Пусто. Монеты ушли в казино'; }
+      renderRoul(); refreshMenu();
+    }
+  }, 70);
+}
+$('roulBtn').addEventListener('click', () => { if (!spinning) { $('reel').className = 'reel'; $('roulRes').textContent = 'Испытайте удачу'; } renderRoul(); show('sRoul'); });
+$('spinBtn').addEventListener('click', spinRoulette);
 function renderMaps() {
   const box = $('maps'); box.textContent = '';
   MAPS.forEach((m, i) => {
@@ -2607,8 +2794,9 @@ function renderShop() {
   checkAch();
   $('walletShop').textContent = SAVE.coins; $('walletMenu').textContent = SAVE.coins;
   document.querySelectorAll('#shopTabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === shopTab));
-  $('skins').hidden = shopTab !== 'skins'; $('upgrades').hidden = shopTab !== 'ups'; $('maps').hidden = shopTab !== 'maps'; $('refundBtn').hidden = shopTab !== 'ups' || upSpent() <= 0;
+  $('skins').hidden = shopTab !== 'skins'; $('upgrades').hidden = shopTab !== 'ups'; $('maps').hidden = shopTab !== 'maps'; $('studio').hidden = shopTab !== 'studio'; $('refundBtn').hidden = shopTab !== 'ups' || upSpent() <= 0;
   if (shopTab === 'ups') { renderUps(); return; }
+  if (shopTab === 'studio') { renderStudio(); return; }
   if (shopTab === 'maps') { renderMaps(); return; }
   const box = $('skins'); box.textContent = '';
   SKINS.forEach((sk, i) => {
@@ -2859,6 +3047,11 @@ function render() {
       ctx.lineWidth = 2; ctx.strokeStyle = hp ? COL.magenta : kk === 'shield' ? '#19a7ff' : COL.sun; ctx.globalAlpha = 0.5 + 0.5 * pr; ctx.stroke(); ctx.globalAlpha = 1;
       const bob = Math.sin(T * 5 + g.y) * 2.5, sz = big ? 38 : 30;
       ctx.drawImage(sprG[kk], g.x - sz / 2, g.y - sz / 2 + bob, sz, sz);
+    } else if (g.back) {
+      if (g.ttl < 2 && Math.floor(T * 14) % 2) continue;
+      const sc = Math.max(0.15, Math.abs(Math.cos(T * 9 + g.x))), z = g.z || 0;
+      ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(g.x, g.y + 8, 9, 4, 0, 0, TAU); ctx.fill();
+      ctx.drawImage(sprG[kk], g.x - 16 * sc, g.y - 16 - z, 32 * sc, 32);
     } else ctx.drawImage(sprG[kk], g.x - 16, g.y - 16, 32, 32);
   }
 
